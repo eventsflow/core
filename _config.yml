@@ -1,1 +1,14 @@
 theme: jekyll-theme-minimal
+
+plugins:
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: true
+
+  include:
+  - events.md
+  - workers.md
+  - flow.md
+
