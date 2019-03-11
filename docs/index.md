@@ -1,6 +1,6 @@
 # EventsFlow
 
-Simple library and console tool for building data processing pipelines, https://eventsflow.github.io/eventsflow/
+Simple library and console tool for building data processing pipelines
 
 - [Events](events.html)
 - [Workers](workers.html)
