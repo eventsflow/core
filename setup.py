@@ -28,7 +28,7 @@ setup(
     python_requires = '>=3.5',
     install_requires = [
         'jinja2==2.10',
-        'pyyaml==3.13',
+        'pyyaml==5.1',
     ],
     entry_points = {
         'console_scripts': [ 'eventsflow=eventsflow.cli:launch_new_instance' ]
