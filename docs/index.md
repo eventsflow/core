@@ -13,7 +13,7 @@ The events are containers for data transporting  between workers. Each event con
 
 ## Workers
 
-to be described later
+The workers perform main data processing logic: reading and writing file, data fetching from end points, payload transformation, filtering, events routing etc. For more details, please read [Workers spec](workers.html)
 
 ## Queues
 
