@@ -5,9 +5,12 @@ The events are containers for data transporting  between workers. Each event con
 The event format
 ```json
 {
-    "name":     "<EventName>",
-    "metadata": { <event metadata as key/value pairs> },
-    "payload":  [ <payload>, ]
+    # event name
+    "name":     "EventName",
+    # event metadata as key/value pairs
+    "metadata": { "k1": "v1", "k2": "v2" },
+	# the list of payloads
+    "payload":  [ "p1", "p2", "p3", ]
 }
 ```
 

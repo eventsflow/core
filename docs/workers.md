@@ -11,9 +11,9 @@ The workers can be different types:
 Simple form of worker's configuration:
 ```yaml
 - name: TestWorker
-  type: eventsflow.workers.DummyWorker
+  type: eventsflow.workers.process.ProcessingWorker
   description: Test worker
-  instances: 1,
+  instances: 1
   parameters: 
     param1: values1
     param2: values2
