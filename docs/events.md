@@ -3,9 +3,9 @@
 The events are containers for data transporting  between workers. Each event contains 3 fields: event name, metadata and payload.
 
 The event format
-```
+```json
 {
-    "name":     <EventName>
+    "name":     "<EventName>",
     "metadata": { <event metadata as key/value pairs> },
     "payload":  [ <payload>, ]
 }
