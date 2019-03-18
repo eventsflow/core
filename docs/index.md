@@ -1,6 +1,15 @@
 # EventsFlow
 
-Simple library for building data processing pipelines and control them via console tool. The components listed below are building blocks for data processing with eventsflow
+Simple library for building data processing pipelines and control them via console tool. 
+
+Where eventsflow library can be used:
+
+- data ingestion
+- data validation
+- data trasformation and filtering
+- data migration between different formats, databases and storages
+
+Eventsflow limits data processing only to one single node. The components listed below are building blocks for data processing with eventsflow
 
 - [Events](events.html)
 - [Workers](workers.html)
