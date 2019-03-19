@@ -1,0 +1,17 @@
+pipeline:
+
+  test:
+    image: ownport/eventsflow-dev:0.1.1-ubuntu  
+    commands:
+    - make pre-cleanup
+    - pip3 install -e .
+    - PYTHONDONTWRITEBYTECODE=1 pytest 
+        --cov=eventsflow 
+        -p no:cacheprovider 
+        --junitxml=report.xml 
+        --cov-report=term-missing 
+        --cov-config=.coveragerc
+    - make post-cleanup
+    when:
+      event: 
+      - test
