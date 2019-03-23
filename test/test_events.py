@@ -1,4 +1,6 @@
 
+import json
+
 from eventsflow.events import Event
 from eventsflow.events import EventStopProcessing
 
@@ -36,3 +38,20 @@ def test_change_events_attrs():
     assert event.name == 'Event#1'
     assert event.metadata == { 'k1': 'v1', 'k2': 'v2', }
     assert event.payload == [ 'p1', 'p2', 'p3', 'p4',]
+
+
+def test_event_to_dict():
+
+    event = Event(name = 'Event#1', metadata = { 'k1': 'v1' }, payload = [ 'p1', 'p2', 'p3'])
+    assert event.to_dict() == {
+        'name': 'Event#1', 'metadata': { 'k1': 'v1' }, 'payload': [ 'p1', 'p2', 'p3']
+    }
+
+
+def test_event_to_json():
+
+    event = Event(name = 'Event#1', metadata = { 'k1': 'v1' }, payload = [ 'p1', 'p2', 'p3'])
+    assert json.loads(event.to_json()) == json.loads("""
+        {"name": "Event#1", "metadata": { "k1": "v1" }, "payload": [ "p1", "p2", "p3"] }
+    """)
+

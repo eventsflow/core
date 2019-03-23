@@ -1,4 +1,5 @@
 
+import json
 
 class Event(object):
 
@@ -11,6 +12,20 @@ class Event(object):
         self.name   = name
         self.metadata   = metadata
         self.payload    = payload
+
+    def to_dict(self):
+        ''' convert event to dict
+        '''
+        return {
+            'name': self.name,
+            'metadata': self.metadata,
+            'payload': self.payload,
+        }
+
+    def to_json(self):
+        ''' convert event to json
+        '''
+        return json.dumps(self.to_dict())
 
 
 class EventStopProcessing(Event):
