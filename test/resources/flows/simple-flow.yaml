@@ -1,0 +1,16 @@
+---
+
+queues:
+
+- name: TestQueue
+  type: eventsflow.queues.local.EventsQueue
+  description: Test queue
+
+
+workers:
+
+- name: TestWorker
+  type: eventsflow.workers.process.ProcessingWorker
+  description: test worker
+  instances: 1
+

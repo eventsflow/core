@@ -1,0 +1,5 @@
+---
+workers:
+
+- name: Worker w/o type
+
