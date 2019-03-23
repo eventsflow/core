@@ -5,79 +5,95 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Default processing timeout, how long worker is waiting for new event
-DEFAULT_PROCESSING_TIMEOUT = 300
+DEFAULT_EVENT_WAITING_TIMEOUT = 300
 
-# Time interval for checking status
-STATUS_CHECK_TIME_INTERVAL = 5
+
+# 
+# Worker settings example:
+# ------------------------
+# 
+# - name: TestWorker
+#   type: eventsflow.workers.DummyWorker
+#   description: Test worker
+#   instances: 1
+#   parameters:
+#     param1: values1
+#     param2: values2
+#   inputs: input-queue
+#   outputs: output-queue
+#
+# Example with named queues and passing events via worker's configuration
+# -----------------------------------------------------------------------
+#  
+# - name: TestWorker
+#   type: eventsflow.workers.DummyWorker
+#   description: Test worker
+#   instances: 1
+#   parameters:
+#     param1: values1
+#     param2: values2
+#   inputs: 
+#   - name: default
+#     refs: input-queue
+#     events: 
+#     - { "name": "EventTest", "metadata": {}, "payload": [] }
+#   outputs: output-queue
 
 
 class Settings(object):
     ''' Worker Settings
     '''
 
-    def __init__(self, queues, **settings):
+    def __init__(self, **settings):
 
         # worker name
         self.name           = settings.get('name', None)
+        if not self.name:
+            raise TypeError('The worker name shall be specifed, {}'.format(self.name))
+
+        # worker type
+        self.type           = settings.get('type', None)
+        if not self.type:
+            raise TypeError('The worker type shall be specifed, {}'.format(self.type))
+
         # worker parameters
         self.parameters     = settings.get('parameters', {})
-        self.input_queues   = self.get_queues(settings.get('input', None), queues)
-        self.output_queues  = self.get_queues(settings.get('output', None), queues)
+        if not isinstance(self.parameters, dict):
+            raise TypeError('The parameters shall be specified as dictionary, founded {}'.format(type(self.parameters)))
+                
+        # no of instances
         self.instances      = settings.get('instances', 1)
-        self.events         = settings.get('events', [])
+        if not isinstance(self.instances, int) or self.instances <= 0:
+            raise TypeError('The instances parameter shall be int type and equals 1 or more')
 
-        try:
-            self.worker_module, self.worker_class = self.parse_type(settings['type'])
-        except KeyError as err:
-            raise TypeError('Worker type shall be specified, {}'.format(settings))
+        # events
+        # self.events         = settings.get('events', [])
 
-    def parse_type(self, worker_type):
+        # inputs
+        self.inputs     = self.parse_gueues(settings.get('inputs', None))
         
-        worker_module, worker_class = worker_type.rsplit('.', 1)
-        return worker_module, worker_class
+        # outputs
+        self.outputs    = self.parse_gueues(settings.get('outputs', None)) 
 
-    def get_queues(self, worker_queues, all_queues):
+    def parse_gueues(self, queues):
+        ''' parse queues
+        '''
+        _queues = list()
 
-        queues = { 'default': None }
-        if not worker_queues:
-            return queues
+        if queues is None:
+            _queues.append({'name': 'default', 'refs': None, 'events': [] })
 
-        try:
-            if worker_queues and isinstance(worker_queues, str):
-                queues['default'] = all_queues[worker_queues]
-            elif worker_queues and isinstance(worker_queues, dict):
-                queues = { name: all_queues[queue] for name, queue in worker_queues.items() }
-            else:
-                raise TypeError('Unknown worker queue type, {}'.format(type(worker_queues)))
-        except KeyError as err:
-            logger.error('Undefined queue name, {}'.format(err))
-            sys.exit(1)
+        elif isinstance(queues, str):
+            _queues.append({'name': 'default', 'refs': queues, 'events': [] })
 
-        return queues
+        elif isinstance(queues, (list, tuple)):
+            for queue in queues:
+                if not isinstance(queue, dict):
+                    raise TypeError('The queue shall be specified as dictionary, founded: {}'.format(type(queue)))
+                _queues.append({
+                    'name': queue.get('name'),
+                    'refs': queue.get('refs', None),
+                    'events': queue.get('events', []),
+                })
         
-    def get_worker_settings(self, process_id):
-
-        return {
-            'name':             '{name}#{process_id:0>3}'.format(name=self.name, process_id=process_id),
-            'parameters':       self.parameters,
-            'input_queues':     self.input_queues,
-            'output_queues':    self.output_queues,
-            'items':            self.items,
-        }
-
-    @property
-    def workers(self):
-
-        workers = list()
-        for i in range(self.instances):
-            worker_settings = self.get_worker_settings(process_id=i)
-            try:
-                # worker_class = getattr(importlib.import_module(self.worker_module),self.worker_class)
-                worker_module = __import__(self.worker_module, globals(), locals(), [self.worker_class,], 0)
-                worker_class = getattr(worker_module, self.worker_class)
-                workers.append(worker_class(**worker_settings))
-            except ImportError as err:
-                logger.error('Worker module: {}, worker class: {}, error message: {}'.format(
-                    self.worker_module, self.worker_class, err))
-                sys.exit(1)
-        return workers
+        return _queues
