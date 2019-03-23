@@ -3,6 +3,7 @@ import sys
 import copy
 import logging
 
+from eventsflow.events import Event
 from eventsflow.workers.settings import Settings as WorkerSettings
 
 from eventsflow.utils import split_worker_uri
@@ -84,11 +85,21 @@ class WorkersRegistry(object):
         return worker_instance
 
     def _update_worker_settings_by_queue_refs(self, settings):
-
+        ''' assign queues to worker inputs/outputs and 
+            publish events to the queues if present
+        '''
         for input in settings.inputs:
-            input['refs'] = self._queues_registry.get(input.get('refs'))
+            queue = self._queues_registry.get(input.get('refs'))
+            if 'events' in input.keys() and queue is not None:
+                for event in input.get('events', []):
+                    queue.publish(Event(**event)) 
+            input['refs'] = queue
     
         for output in settings.outputs:
-            output['refs'] = self._queues_registry.get(output.get('refs'))
+            queue = self._queues_registry.get(output.get('refs'))
+            if 'events' in output.keys() and queue is not None:
+                for event in output.get('events', []):
+                    queue.publish(Event(**event))
+            output['refs'] = queue
 
         return settings

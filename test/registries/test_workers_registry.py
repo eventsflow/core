@@ -1,6 +1,8 @@
 
 import pytest
 
+from eventsflow.events import Event
+
 from eventsflow.registries.queues import QueuesRegistry
 from eventsflow.registries.workers import WorkersRegistry
 
@@ -92,3 +94,41 @@ def test_workers_registry_load_workers_queues():
     registry.load(WORKERS)
 
     assert [ type(w) for w in registry.workers] == [ ProcessingWorker, ] 
+
+def test_workers_registry_load_workers_queues_with_events():
+    ''' load workers to registry with queues and events
+    '''
+
+    QUEUES = [
+        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
+    ]
+    queues = QueuesRegistry()
+    queues.load(QUEUES)
+
+    EVENTS = [
+        {'name': 'EventTest#1', 'metadata': {}, 'payload': []},
+        {'name': 'EventTest#1', 'metadata': {}, 'payload': []},
+        {'name': 'EventTest#1', 'metadata': {}, 'payload': []},
+    ]
+
+    WORKERS = [
+        {   'name': 'TestWorker', 
+            'type': 'eventsflow.workers.process.ProcessingWorker', 
+            'inputs': [
+                {'name': 'default', 'refs': 'SourceQueue', 'events': EVENTS }
+            ], 
+        },
+    ]
+    registry = WorkersRegistry(queues=queues)
+    registry.load(WORKERS)
+
+    assert [ type(w) for w in registry.workers] == [ ProcessingWorker, ] 
+    assert queues.get('SourceQueue')
+
+    events = []
+    for _ in EVENTS:
+        event = queues.get('SourceQueue').consume()
+        events.append(event.to_dict())
+    
+    assert events == EVENTS
+
