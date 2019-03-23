@@ -17,4 +17,4 @@ class EventStopProcessing(Event):
 
     def __init__(self):
 
-        super(StopProcessingEvent, self).__init__(name='EventStopProcessing')
+        super(EventStopProcessing, self).__init__(name='EventStopProcessing')
