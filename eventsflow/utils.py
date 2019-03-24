@@ -76,3 +76,4 @@ def split_worker_uri(uri):
     if uri:
         _module, _class = uri.rsplit('.', 1)
     return _module, _class
+

@@ -97,5 +97,8 @@ def test_flow_unspecified_placeholder():
 
 def test_split_worker_uri():
 
+    assert split_worker_uri('') == (None, None)
+    assert split_worker_uri(None) == (None, None)
+
     assert split_worker_uri('eventsflow.workers.process.ProcessingWorker') == ('eventsflow.workers.process', 'ProcessingWorker')
 
