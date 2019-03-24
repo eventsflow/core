@@ -49,7 +49,7 @@ def test_worker_settings_none_queue():
             'parameters': { 'batch_size': 100 },
             'instances': 1,
             'inputs': None, })
-    assert settings.inputs == [ { 'name': 'default', 'refs': None, 'events': [], }, ]
+    assert settings.inputs ==  { 'default': { 'refs': None, 'events': [], }, }
 
 
 def test_worker_settings_incorrect_queue_defs():
@@ -83,8 +83,8 @@ def test_worker_settings_simple():
     assert settings.parameters == {
                         'param1': 'values1',
                         'param2': 'values2', }
-    assert settings.inputs == [ { 'name': 'default', 'refs': 'input-queue', 'events': [], }, ]
-    assert settings.outputs == [ { 'name': 'default', 'refs': 'output-queue', 'events': [], }, ]
+    assert settings.inputs ==  { 'default': { 'refs': 'input-queue', 'events': [], }, }
+    assert settings.outputs == { 'default': { 'refs': 'output-queue', 'events': [], }, }
     
 
 def test_worker_settings_simple_as_dict():
@@ -107,8 +107,8 @@ def test_worker_settings_simple_as_dict():
         'type': 'eventsflow.workers.DummyWorker',
         'instances': 1,
         'parameters': { 'param1': 'values1', 'param2': 'values2', },
-        'inputs':    [ { 'name': 'default', 'refs': 'input-queue', 'events': [], }, ],
-        'outputs':   [ { 'name': 'default', 'refs': 'output-queue', 'events': [], }, ],
+        'inputs':     { 'default': { 'refs': 'input-queue', 'events': [], }, },
+        'outputs':    { 'default': { 'refs': 'output-queue', 'events': [], }, },
     }
 
 def test_worker_settings_simple_list_of_queues():
@@ -136,9 +136,9 @@ def test_worker_settings_simple_list_of_queues():
         'type': 'eventsflow.workers.DummyWorker',
         'instances': 1,
         'parameters': { 'param1': 'values1', 'param2': 'values2', },
-        'inputs':    [ { 'name': 'default', 'refs': 'input-queue', 'events': [], }, ],
-        'outputs':   [ 
-            { 'name': 'default', 'refs': 'output-queue', 'events': [], }, 
-            { 'name': 'monitoring', 'refs': 'monitoring-queue', 'events': [], }, 
-        ],
+        'inputs':    { 'default': { 'refs': 'input-queue', 'events': [], }, },
+        'outputs':   { 
+            'default': { 'refs': 'output-queue', 'events': [], }, 
+            'monitoring': { 'refs': 'monitoring-queue', 'events': [], }, 
+        },
     }

@@ -88,14 +88,14 @@ class WorkersRegistry(object):
         ''' assign queues to worker inputs/outputs and 
             publish events to the queues if present
         '''
-        for input in settings.inputs:
+        for name, input in settings.inputs.items():
             queue = self._queues_registry.get(input.get('refs'))
             if 'events' in input.keys() and queue is not None:
                 for event in input.get('events', []):
                     queue.publish(Event(**event)) 
             input['refs'] = queue
     
-        for output in settings.outputs:
+        for name, output in settings.outputs.items():
             queue = self._queues_registry.get(output.get('refs'))
             if 'events' in output.keys() and queue is not None:
                 for event in output.get('events', []):

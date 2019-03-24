@@ -78,22 +78,21 @@ class Settings(object):
     def parse_gueues(self, queues):
         ''' parse queues
         '''
-        _queues = list()
+        _queues = dict()
 
         if queues is None:
-            _queues.append({'name': 'default', 'refs': None, 'events': [] })
+            _queues['default'] = { 'refs': None, 'events': [] }
 
         elif isinstance(queues, str):
-            _queues.append({'name': 'default', 'refs': queues, 'events': [] })
+            _queues['default'] = {'refs': queues, 'events': [] }
 
         elif isinstance(queues, (list, tuple)):
             for queue in queues:
                 if not isinstance(queue, dict):
                     raise TypeError('The queue shall be specified as dictionary, founded: {}'.format(type(queue)))
-                _queues.append({
-                    'name': queue.get('name'),
+                _queues[queue.get('name')] = {
                     'refs': queue.get('refs', None),
                     'events': queue.get('events', []),
-                })
+                }
         
         return _queues
