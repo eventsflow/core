@@ -75,7 +75,8 @@ class Settings(object):
         # outputs
         self.outputs    = self.parse_gueues(settings.get('outputs', None)) 
 
-    def parse_gueues(self, queues):
+    @staticmethod
+    def parse_gueues(queues):
         ''' parse queues
         '''
         _queues = dict()
@@ -94,5 +95,7 @@ class Settings(object):
                     'refs': queue.get('refs', None),
                     'events': queue.get('events', []),
                 }
-        
+        else:
+            logger.warning('Founded queues definition but cannot process it, expected list, founded: {}'.format(type(queues)))
+
         return _queues

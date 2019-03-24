@@ -142,3 +142,35 @@ def test_worker_settings_simple_list_of_queues():
             'monitoring': { 'refs': 'monitoring-queue', 'events': [], }, 
         },
     }
+
+# ==========================================================
+#
+#  parse_queues() tests
+#
+ 
+def test_worker_settings_parse_queues_as_default():
+
+    assert Settings.parse_gueues(None) == {
+        'default': {'events': [], 'refs': None}
+    }
+    
+    assert Settings.parse_gueues('source-queue') == {
+        'default': {'events': [], 'refs': 'source-queue' }
+    }
+    
+def test_worker_settings_parse_queues_as_list():
+
+    assert Settings.parse_gueues([{'name': 'default'}]) == {
+        'default': {'events': [], 'refs': None }
+    }
+
+    assert Settings.parse_gueues([{'name': 'default', 'refs': 'source' }, ]) == {
+        'default': {'events': [], 'refs': 'source' }
+    }
+
+def test_worker_settings_parse_queues_errors_handline():
+
+    assert Settings.parse_gueues({ 'name': 'default' }) == {}
+
+    with pytest.raises(TypeError):
+        Settings.parse_gueues([ 'default', ])
