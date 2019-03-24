@@ -42,12 +42,12 @@ class EventsQueue(Queue):
 
 
     def consume(self, block=True, timeout=None):
-        ''' consume event from queue
+        ''' consume the event from queue
         '''
         return self.get(block=block, timeout=timeout)
 
     def publish(self, obj, block=True, timeout=None):
-        ''' publish event into queue
+        ''' publish the event into queue
         '''
         assert not self._closed
         if not self._sem.acquire(block, timeout):
@@ -61,7 +61,8 @@ class EventsQueue(Queue):
             self._notempty.notify()
 
     def commit(self):
-        
+        ''' commit the event in the queue
+        '''
         with self._cond:
             if not self._unfinished_events.acquire(False):
                 raise ValueError('commit() called too many times')
