@@ -101,6 +101,7 @@ def test_workers_registry_load_workers_queues_with_events():
 
     QUEUES = [
         {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
+        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
     ]
     queues = QueuesRegistry()
     queues.load(QUEUES)
@@ -117,6 +118,9 @@ def test_workers_registry_load_workers_queues_with_events():
             'inputs': [
                 {'name': 'default', 'refs': 'SourceQueue', 'events': EVENTS }
             ], 
+            'outputs': [
+                {'name': 'default', 'refs': 'TargetQueue', 'events': EVENTS }
+            ], 
         },
     ]
     registry = WorkersRegistry(queues=queues)
@@ -124,7 +128,9 @@ def test_workers_registry_load_workers_queues_with_events():
 
     assert [ type(w) for w in registry.workers] == [ ProcessingWorker, ] 
     assert queues.get('SourceQueue')
+    assert queues.get('TargetQueue')
 
+    # Source Queue
     events = []
     for _ in EVENTS:
         event = queues.get('SourceQueue').consume()
@@ -132,3 +138,10 @@ def test_workers_registry_load_workers_queues_with_events():
     
     assert events == EVENTS
 
+    # Target Queue
+    events = []
+    for _ in EVENTS:
+        event = queues.get('TargetQueue').consume()
+        events.append(event.to_dict())
+    
+    assert events == EVENTS
