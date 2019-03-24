@@ -22,6 +22,7 @@ class EventsQueue(Queue):
         Queue.__init__(self, maxsize, ctx=ctx)
         self._unfinished_events = ctx.Semaphore(0)
         self._cond = ctx.Condition()
+        self._maxsize = maxsize
 
     def __getstate__(self):
         
@@ -31,6 +32,14 @@ class EventsQueue(Queue):
         
         Queue.__setstate__(self, state[:-2])
         self._cond, self._unfinished_events = state[-2:]
+
+    def size(self):
+        ''' Return the approximate size of the queue. 
+        
+        Because of multithreading/multiprocessing semantics, this number is not reliable.
+        '''
+        return self.qsize()
+
 
     def consume(self, block=True, timeout=None):
         ''' consume event from queue
