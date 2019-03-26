@@ -40,7 +40,6 @@ class EventsQueue(Queue):
         '''
         return self.qsize()
 
-
     def consume(self, block=True, timeout=None):
         ''' consume the event from queue
         '''

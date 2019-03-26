@@ -17,6 +17,12 @@ class QueuesRegistry(object):
         '''
         return self._registry.get(name, None)
 
+    @property
+    def queues(self):
+        ''' return the list of queues
+        '''
+        return self._registry
+
     def load(self, queues):
         ''' load queues to registry
         '''

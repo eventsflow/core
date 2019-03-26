@@ -63,3 +63,4 @@ def test_queues_registry_load():
     assert registry.get('TestQueue#1') is not None
     assert isinstance(registry.get('TestQueue#1'), EventsQueue)
 
+    assert [ name for name in registry.queues ] == [ 'TestQueue#1', ]
