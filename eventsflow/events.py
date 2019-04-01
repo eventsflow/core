@@ -28,6 +28,13 @@ class Event(object):
         return json.dumps(self.to_dict())
 
 
+class EventDrop(Event):
+
+    def __init__(self):
+
+        super(EventDrop, self).__init__(name='EventDrop')
+
+
 class EventStopProcessing(Event):
 
     def __init__(self):
