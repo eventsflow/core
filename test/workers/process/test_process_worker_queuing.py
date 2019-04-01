@@ -12,7 +12,7 @@ from eventsflow.registries.workers import WorkersRegistry
 from eventsflow.queues.local.queues import EventsQueue
 from eventsflow.queues.local.queues import LocalQueueEmpty
 
-from common import SampleProcessingWorker
+from test_common import SampleProcessingWorker
 
 
 def test_process_worker_publish_event_to_unk_queue():
@@ -23,7 +23,7 @@ def test_process_worker_publish_event_to_unk_queue():
     })
 
     worker = ProcessingWorker(settings)
-    worker.publish('event', queue_name='target')
+    worker.publish('event', output='target')
 
 
 def test_process_worker_queue_action_consume():
@@ -44,7 +44,7 @@ def test_process_worker_queue_action_consume():
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker', 
-            'type': 'common.SampleProcessingWorker', 
+            'type': 'test_common.SampleProcessingWorker', 
             'parameters': { 'timeout': 1, },
             'inputs': 'SourceQueue', 
             'outputs': 'TargetQueue', 
@@ -80,7 +80,7 @@ def test_process_worker_queue_action_publish():
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker', 
-            'type': 'common.SampleProcessingWorker', 
+            'type': 'test_common.SampleProcessingWorker', 
             'parameters': { 'timeout': 1, },
             'inputs': 'SourceQueue', 
             'outputs': 'TargetQueue', 
@@ -93,10 +93,10 @@ def test_process_worker_queue_action_publish():
     worker.publish(test_event)
     assert queues.get('TargetQueue').consume().to_dict() == test_event.to_dict()
 
-    worker.publish(test_event, queue_name='default')
+    worker.publish(test_event, output='default')
     assert queues.get('TargetQueue').consume().to_dict() == test_event.to_dict()
 
-    worker.publish(test_event, queue_name='unknown')
+    worker.publish(test_event, output='unknown')
     with pytest.raises(LocalQueueEmpty):
         assert queues.get('TargetQueue').consume(timeout=1)
 
@@ -119,7 +119,7 @@ def test_process_worker_queue_action_commit():
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker', 
-            'type': 'common.SampleProcessingWorker', 
+            'type': 'test_common.SampleProcessingWorker', 
             'parameters': { 'timeout': 1, },
             'inputs': 'SourceQueue', 
             'outputs': 'TargetQueue', 

@@ -8,6 +8,7 @@ from eventsflow.registries.queues import QueuesRegistry
 from eventsflow.registries.workers import WorkersRegistry
 
 from eventsflow.events import Event
+from eventsflow.events import EventDrop
 from eventsflow.events import EventStopProcessing
 
 from eventsflow.queues.local.queues import EventsQueue
@@ -52,7 +53,7 @@ def test_process_worker_run():
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker', 
-            'type': 'common.SampleProcessingWorker', 
+            'type': 'test_common.SampleProcessingWorker', 
             'parameters': { 'timeout': 1, },
             'inputs': [
                 {'name': 'default', 'refs': 'SourceQueue', 'events': EVENTS }
@@ -74,6 +75,7 @@ def test_process_worker_run():
     assert target_queue
 
     for event in EVENTS:
+        event['metadata']['eventsflow.source'] = 'TestWorker#000'
         assert event == target_queue.consume().to_dict()
         target_queue.commit()
 
@@ -88,7 +90,7 @@ def test_process_worker_stop_processing_by_event():
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker', 
-            'type': 'common.SampleProcessingWorker', 
+            'type': 'test_common.SampleProcessingWorker', 
             'parameters': { 'timeout': 1, },
             'inputs': 'SourceQueue', 
         },
@@ -98,5 +100,32 @@ def test_process_worker_stop_processing_by_event():
 
     for worker in workers.workers():
         assert worker.consume() == None
+
+def test_process_worker_drop_events():
+
+    queues = QueuesRegistry()
+    queues.load([
+        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
+        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
+    ])
+
+    workers = WorkersRegistry(queues=queues)
+    workers.load([
+        {   'name': 'TestWorker', 
+            'type': 'test_common.SampleProcessingWorker', 
+            'parameters': { 'timeout': 1, },
+            'inputs': 'SourceQueue', 
+        },
+    ])
+
+    queues.get('SourceQueue').publish(EventDrop())
+    queues.get('SourceQueue').publish(EventStopProcessing())
+
+    for worker in workers.workers():
+        worker.run()
+    
+    source_queue = queues.get('SourceQueue')
+    assert source_queue
+    assert source_queue.empty() is True
 
 
