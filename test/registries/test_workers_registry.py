@@ -69,7 +69,7 @@ def test_workers_registry_load_workers_config():
     registry.load([
         {'name': 'TestWorker', 'type': 'eventsflow.workers.process.ProcessingWorker', },
     ])
-    assert [ type(w) for w in registry.workers] == [ ProcessingWorker, ] 
+    assert [ type(w) for w in registry.workers()] == [ ProcessingWorker, ] 
 
 
 def test_workers_registry_load_workers_queues():
@@ -93,7 +93,8 @@ def test_workers_registry_load_workers_queues():
     registry = WorkersRegistry(queues=queues)
     registry.load(WORKERS)
 
-    assert [ type(w) for w in registry.workers] == [ ProcessingWorker, ] 
+    assert [ type(w) for w in registry.workers()] == [ ProcessingWorker, ] 
+
 
 def test_workers_registry_load_workers_queues_with_events():
     ''' load workers to registry with queues and events
@@ -126,7 +127,7 @@ def test_workers_registry_load_workers_queues_with_events():
     registry = WorkersRegistry(queues=queues)
     registry.load(WORKERS)
 
-    assert [ type(w) for w in registry.workers] == [ ProcessingWorker, ] 
+    assert [ type(w) for w in registry.workers()] == [ ProcessingWorker, ] 
     assert queues.get('SourceQueue')
     assert queues.get('TargetQueue')
 

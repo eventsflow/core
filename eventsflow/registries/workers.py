@@ -23,12 +23,30 @@ class WorkersRegistry(object):
         self._queues_registry = queues
         self._workers_registry  = list()
 
-    @property
-    def workers(self):
-        ''' iterate by workers
+    def workers(self, status='all'):
+        ''' iterate by workers with their statuses
+
+        Possible statuses:
+        - all
+        - active
+        - inactive
+        '''
+        if status not in ('all', 'active', 'inactive'):
+            raise TypeError('The status shall as `all`, `active` or `inactive`')
+
+        for worker in self._workers_registry:
+            if status == 'all':
+                yield worker
+            elif status == 'active' and worker.is_alive():
+                yield worker
+            elif status == 'inactive' and not worker.is_alive():
+                yield worker
+
+    def start(self):
+        ''' start workers in the registry
         '''
         for worker in self._workers_registry:
-            yield worker
+            worker.start()
 
     def load(self, workers):
         ''' load workers to registry

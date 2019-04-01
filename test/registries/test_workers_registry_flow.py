@@ -7,7 +7,7 @@ from eventsflow.registries.workers import WorkersRegistry
 
 from eventsflow.events import EventStopProcessing
 
-from common import SampleProcessingWorker
+from test_common import SampleProcessingWorker
 
 
 def test_workers_registry_flow_worker_status():
@@ -15,7 +15,7 @@ def test_workers_registry_flow_worker_status():
     '''
     registry = WorkersRegistry(queues=QueuesRegistry())
     registry.load([
-        {'name': 'TestWorker', 'type': 'common.SampleProcessingWorker', },
+        {'name': 'TestWorker', 'type': 'test_common.SampleProcessingWorker', },
     ])
 
     assert [ type(w) for w in registry.workers(status='active')]    == [] 
@@ -37,7 +37,7 @@ def test_workers_registry_flow_start_workers_and_check_status():
     
     workers_registry = WorkersRegistry(queues=queues_registry)
     workers_registry.load([
-        {'name': 'TestWorker', 'type': 'common.SampleProcessingWorker', 'inputs': 'records'},
+        {'name': 'TestWorker', 'type': 'test_common.SampleProcessingWorker', 'inputs': 'records'},
     ])
 
     assert [ type(w) for w in workers_registry.workers(status='active')]    == [ ] 
