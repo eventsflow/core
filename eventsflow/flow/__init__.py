@@ -27,7 +27,7 @@ class Flow(object):
         self._queues    = QueuesRegistry()
         self._queues.load(queues_conf)
 
-        self._workers   = WorkersRegistry()
+        self._workers   = WorkersRegistry(queues=self._queues)
         self._workers.load(workers_conf)
 
     @property
@@ -42,17 +42,24 @@ class Flow(object):
         '''
         return self._workers.workers
 
-    def get_current_status(self):
-        ''' returns the current status
+    def get_current_status(self, with_logging=False):
+        ''' returns the current workers status
         '''
-        active_workers = self._workers.workers(status='active')
-        stopped_workers = self._workers.workers(status='stopped')
-        return {
+        active_workers = list(self._workers.workers(status='active'))
+        stopped_workers = list(self._workers.workers(status='inactive'))
+
+        current_state = {
             'activeWorkers':            active_workers,
             'activeWorkersByName':      [p.name for p in active_workers],
-            'stoppedWorkersByName':     [p.name for p in stopped_workers],
-            'queues':                   dict([(n, q.qsize()) for n, q in self._queues.items()]),
-        }
+            'inactiveWorkersByName':    [p.name for p in stopped_workers],
+            'queues':                   dict([(name, queue.size()) for name, queue in self._queues.queues.items()]),
+        } 
+        if with_logging:
+            logger.info('Queues stats: {}'.format(current_state.get('queues', [] )))
+            logger.info('Active workers: {}'.format(current_state.get('activeWorkersByName', [] )))
+            logger.info('Stopped workers: {}'.format(current_state.get('stoppedWorkersByName', [] )))
+
+        return current_state 
 
     def run(self):
         ''' run flow
@@ -62,11 +69,7 @@ class Flow(object):
 
         while True:
             
-            current_status = self.get_current_status()
-
-            logger.info('Queues stats: {}'.format(current_status.get('queues', [] )))
-            logger.info('Active workers: {}'.format(current_status.get('activeWorkersByName', [] )))
-            logger.info('Stopped workers: {}'.format(current_status.get('stoppedWorkersByName', [] )))
+            current_status = self.get_current_status(with_logging=True)
 
             if not current_status.get('activeWorkers', []):
                 break
@@ -87,10 +90,6 @@ class Flow(object):
                             num_consumers += 1
 
                 if queue_size == 0 and num_producers == 0:
-                    # logger.info('Queue name: {}, queue size: {}, num of producers: {}, num of consumers: {}'.format(
-                    #     queue_name, queue_size, num_producers, num_consumers
-                    # ))
-
                     for _ in range(num_consumers):
                         logger.info('Sending stop processing task to queue: {}'.format(queue_name))
                         queue_instance.put(EventStopProcessing)
