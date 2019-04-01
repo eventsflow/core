@@ -1,9 +1,9 @@
 
 import os
-import sys
+
 from codecs import open
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -20,17 +20,17 @@ def build_package_names(path):
 
 
 setup(
-    name = 'eventsflow',
-    version = '0.1.0.dev0',
-    description = "Events Flow",
-    long_description = readme,
+    name='eventsflow',
+    version='0.1.0.dev0',
+    description="Events Flow",
+    long_description=readme,
     packages=build_package_names('eventsflow'),
-    python_requires = '>=3.5',
-    install_requires = [
+    python_requires='>=3.5',
+    install_requires=[
         'jinja2==2.10',
         'pyyaml==5.1',
     ],
-    entry_points = {
-        'console_scripts': [ 'eventsflow=eventsflow.cli:launch_new_instance' ]
+    entry_points={
+        'console_scripts': ['eventsflow=eventsflow.cli:launch_new_instance']
     }
 )
