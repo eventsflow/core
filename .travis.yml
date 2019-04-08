@@ -1,0 +1,5 @@
+language: python
+python:
+- '3.5'
+- '3.6'
+script: pytest --cov=eventsflow -p no:cacheprovider --cov-report=term-missing --cov-config=.coveragerc
