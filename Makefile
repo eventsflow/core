@@ -19,15 +19,3 @@ post-cleanup:
 test: 
 	@ drone exec --event test
 
-# .PHONY: deploy
-# deploy:
-# 	@ echo "[INFO] Deploy build to Nexus Snapshots" && \
-# 		drone exec --build-event deploy
-
-# .PHONY: release
-# release:
-# 	@ echo "[INFO] Release component and deploy to Nexus Releases" && \
-# 		drone exec --event release
-# 	git push origin master
-# 	git push origin --tags
-
