@@ -27,7 +27,7 @@ setup(
     packages=build_package_names('eventsflow'),
     python_requires='>=3.5',
     install_requires=[
-        'jinja2==2.10',
+        'jinja2==2.10.1',
         'pyyaml==5.1',
     ],
     entry_points={
