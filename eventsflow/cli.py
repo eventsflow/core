@@ -19,7 +19,7 @@ class CLI(object):
         parser = argparse.ArgumentParser()
 
         parser.add_argument('-v', '--version', action='version',
-                            version='eventsflow-v{}'.format('0.1.0'))
+                            version='eventsflow-v{}'.format('0.1.0.dev0'))
         parser.add_argument('-l', '--log-level', default='INFO',
                             help='Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL')
         parser.add_argument('--libs', action='append',
