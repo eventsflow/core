@@ -7,6 +7,6 @@ scripts/pre-cleanup.sh
 
 echo '[INFO] Release new version'
 bumpversion part --tag
-python setup.py sdist bdist_wheel
+python3 setup.py sdist bdist_wheel
 twine upload --username ownport dist/*
 bumpversion --serialize {major}.{minor}.{patch}.dev0 patch
