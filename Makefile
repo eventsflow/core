@@ -19,3 +19,7 @@ post-cleanup:
 test: 
 	@ drone exec --event test
 
+.PHONY: release
+release:
+	@ drone exec --event release
+
