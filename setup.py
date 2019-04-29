@@ -32,5 +32,10 @@ setup(
     ],
     entry_points={
         'console_scripts': ['eventsflow=eventsflow.cli:launch_new_instance']
-    }
+    },
+    classifiers = [
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: Linux",
+    ]
 )
