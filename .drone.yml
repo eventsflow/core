@@ -17,15 +17,3 @@ pipeline:
       - test
       # - release
   
-  release:
-    image: ownport/eventsflow-dev:0.1.2-ubuntu  
-    commands:
-    - make pre-cleanup
-    - bumpversion part --tag
-    - twine upload dist/*
-    # - bumpversion --serialize {major}.{minor}.{patch}.dev0 patch
-    - make post-clean
-    when:
-      event: 
-      - release
-
