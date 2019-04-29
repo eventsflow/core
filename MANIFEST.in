@@ -1,0 +1,5 @@
+include LICENSE README.md CHANGELOG.md
+global-exclude *.py[co]
+graft docs
+graft examples
+graft tests
