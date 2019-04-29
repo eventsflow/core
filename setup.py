@@ -21,7 +21,7 @@ def build_package_names(path):
 
 setup(
     name='eventsflow',
-    version='0.1.3.dev0',
+    version='0.1.3',
     description="Events Flow",
     long_description=readme,
     packages=build_package_names('eventsflow'),
