@@ -1,0 +1,11 @@
+[paths]
+source = eventsflow
+
+[run]
+branch = True
+source = eventsflow
+parallel = true
+
+[report]
+show_missing = true
+precision = 2
