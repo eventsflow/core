@@ -1,4 +1,8 @@
-image: registry.gitlab.com/eventsflow/eventsflow-docker/eventsflow-dev:0.5.4-ubuntu
+default:
+  image: registry.gitlab.com/eventsflow/eventsflow-docker/eventsflow-dev:0.5.4-ubuntu
+
+variables:
+
 
 stages:
 - build
@@ -9,3 +13,6 @@ test_eventflow:
   stage: test
   script:
   - /usr/sbin/dev/run-pytests.sh
+  artifacts:
+    reports:
+      junit: report.xml
