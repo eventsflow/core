@@ -1,0 +1,11 @@
+image: registry.gitlab.com/eventsflow/eventsflow-dev:0.5.4-ubuntu
+
+stages:
+- build
+- test
+- release
+
+test_eventflow:
+  stage: test
+  script:
+  - /usr/sbin/dev/run-pytests.sh
