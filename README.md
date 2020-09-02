@@ -1,6 +1,7 @@
 # eventsflow-core
 
-![Run tests for EventsFlow Core](https://github.com/eventsflow/eventsflow-core/workflows/Run%20tests%20for%20EventsFlow%20Core/badge.svg?branch=master)
+[![pipeline status](https://gitlab.com/eventsflow/eventsflow-core/badges/master/pipeline.svg)](https://gitlab.com/eventsflow/eventsflow-core/-/commits/master)
+[![coverage report](https://gitlab.com/eventsflow/eventsflow-core/badges/master/coverage.svg)](https://gitlab.com/eventsflow/eventsflow-core/-/commits/master)
 
 Simple library and console tool for building data processing pipelines, https://eventsflow.github.io/eventsflow/
 
