@@ -1,4 +1,5 @@
-
+''' Eventsflow CLI Module
+'''
 import os
 import sys
 import logging
@@ -12,8 +13,9 @@ from eventsflow.utils import load_extra_vars
 logger = logging.getLogger(__name__)
 
 
-class CLI(object):
-
+class CLI:
+    ''' Eventsflow CLI
+    '''
     def __init__(self):
 
         parser = argparse.ArgumentParser()
