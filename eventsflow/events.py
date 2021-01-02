@@ -1,19 +1,26 @@
-
+''' Events Module
+'''
 import json
 
 class Event(object):
-
+    ''' Event
+    '''
     name        = 'EventBase'
     metadata    = dict()
     payload     = list()
 
-    def __init__(self, name, metadata=dict(), payload=list()):
-
+    def __init__(self, name:str, metadata:dict=None, payload:list=None):
+        ''' initialize event
+        @param name     the event name
+        @param metadata the metadata is key/value storage
+                        with additional event information
+        @param payload  the list of payload(-s)
+        '''
         self.name   = name
-        self.metadata   = metadata
-        self.payload    = payload
+        self.metadata   = metadata if metadata else dict()
+        self.payload    = payload if payload else list()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         ''' convert event to dict
         '''
         return {
@@ -22,21 +29,23 @@ class Event(object):
             'payload': self.payload,
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
         ''' convert event to json
         '''
         return json.dumps(self.to_dict())
 
 
 class EventDrop(Event):
-
+    ''' Drop Event
+    '''
     def __init__(self):
 
-        super(EventDrop, self).__init__(name='EventDrop')
+        super().__init__(name='EventDrop')
 
 
 class EventStopProcessing(Event):
-
+    ''' Event for Stop Processing
+    '''
     def __init__(self):
 
-        super(EventStopProcessing, self).__init__(name='EventStopProcessing')
+        super().__init__(name='EventStopProcessing')

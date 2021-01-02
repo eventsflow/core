@@ -1,23 +1,31 @@
+''' Workers | Process Module
+'''
 
 import logging
 import multiprocessing as mp
 
 from collections import Counter
 
+from eventsflow.events import Event
 from eventsflow.events import EventDrop
 from eventsflow.events import EventStopProcessing
 
+from eventsflow.workers.settings import Settings
 from eventsflow.workers.settings import DEFAULT_EVENT_WAITING_TIMEOUT
-from eventsflow.queues.local.queues import LocalQueueEmpty 
+
+from eventsflow.queues.local.queues import LocalQueueEmpty
 
 
 logger = logging.getLogger(__name__)
 
 
 class ProcessingWorker(mp.Process):
-
-    def __init__(self, settings):
+    ''' Processing Worker
+    '''
+    def __init__(self, settings:Settings):
         ''' Processing worker
+
+        @param  settings
         '''
         super(ProcessingWorker, self).__init__()
 
@@ -30,19 +38,19 @@ class ProcessingWorker(mp.Process):
         self._metrics = Counter(dict())
 
     def open_worker(self):
-        ''' run method before worker start
+        ''' the method will be runned before worker start
         '''
-        logger.info('Worker: {}, status: started'.format(self.name))
+        logger.info('Worker: %s, status: started', self.name)
 
     def close_worker(self):
-        ''' run method before worker completed
+        ''' the method will be runned before worker completed
         '''
-        logger.info('Worker: {}, status: completed'.format(self.name))
+        logger.info('Worker: %s, status: completed', self.name)
 
     def run(self):
-        ''' processing run
+        ''' run worker processing
 
-        TODO 
+        TODO
         - support multiple queues
         - add performance metrics:
             - waiting for event
@@ -61,64 +69,70 @@ class ProcessingWorker(mp.Process):
                     # send events to outputs
                     outgoing_event.metadata['eventsflow.source'] = self.name
                     for output in outgoing_event.metadata.get('eventsflow.outputs', ['default']):
-                        self.publish(outgoing_event, output=output)
+                        self.publish(outgoing_event, queue_name=output)
                 self.commit()
 
             # if no active input queues, stop processing
             if len(self.inputs) == 0:
                 break
 
-        logger.info('Worker: {}, no input queues, status: stopping '.format(self.name))
+        logger.info('Worker: %s, no input queues, status: stopping ', self.name)
         self.close_worker()
 
-    def process(self, event):
+    def process(self, event) -> Event:
         ''' process event
 
-        the method shall yield events or EventDrop if the events need to drop 
+        the method shall yield events or EventDrop if the events need to drop
         '''
         raise NotImplementedError('The method process does not implemented')
 
-    def consume(self, input='default'):
+    def consume(self, queue_name:str='default') -> Event:
         ''' consume event from the queue
+
+        @param  input   the input queue
         '''
-        queue = self.inputs.get(input, {}).get('refs', None)
+        queue = self.inputs.get(queue_name, {}).get('refs', None)
         if not queue:
-            logger.error('Worker: {}, unknown queue: {}'.format(self.name, input))
+            logger.error('Worker: %s, unknown queue: %s', self.name, queue_name)
             return None
-            
+
         try:
-            # consume event from queue    
+            # consume event from queue
             event = queue.consume(timeout=self.timeout)
-        except LocalQueueEmpty as err:
-            logger.warning('Worker: {}, queue: {}, timeout: {}, no events'.format(self.name, input, self.timeout))
+        except LocalQueueEmpty:
+            logger.warning('Worker: %s, queue: %s, timeout: %s, no events',
+                self.name, queue_name, self.timeout)
             # remove queue from inputs
-            self.inputs.pop(input)
+            self.inputs.pop(queue_name)
             event = None
 
-        if type(event) == EventStopProcessing:
-            logger.info('Worker: {}, process completed for queue: {}'.format(self.name, input))
+        if isinstance(event, EventStopProcessing):
+            logger.info('Worker: %s, process completed for queue: %s',
+                self.name, queue_name)
             # commit event
             queue.commit()
             # remove queue from inputs
-            self.inputs.pop(input)
+            self.inputs.pop(queue_name)
             event = None
 
         return event
 
-    def publish(self, event, output='default'):
+    def publish(self, event:Event, queue_name:str='default'):
         ''' send event to the queue
         '''
-        queue = self.outputs.get(output, {}).get('refs', None)
+        queue = self.outputs.get(queue_name, {}).get('refs', None)
         if not queue:
-            logger.error('worker: {}, The attempt to send the event to unknow queue name: {}'.format(self.name, output))
+            logger.error('worker: %s, The attempt to send the event to unknow queue name: %s',
+                self.name, queue_name)
         else:
             queue.publish(event)
 
-    def commit(self, input='default'):
-        ''' commit event as processed
+    def commit(self, queue_name:str='default'):
+        ''' commit event as processed in queue
         '''
-        queue = self.inputs.get(input, {}).get('refs', None)
+        queue = self.inputs.get(queue_name, {}).get('refs', None)
         if not queue:
-            logger.error('worker: {}, The attempt to commit the event to unknow queue name: {}'.format(self.name, input))
+            logger.error('worker: %s, The attempt to commit the event to unknow queue name: %s',
+                self.name, queue_name)
         else:
             queue.commit()

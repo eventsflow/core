@@ -1,4 +1,5 @@
-
+''' Tests | Workers | Process
+'''
 import pytest
 
 from eventsflow.events import Event
@@ -12,22 +13,21 @@ from eventsflow.registries.workers import WorkersRegistry
 from eventsflow.queues.local.queues import EventsQueue
 from eventsflow.queues.local.queues import LocalQueueEmpty
 
-from test_common import SampleProcessingWorker
-
 
 def test_process_worker_publish_event_to_unk_queue():
-
+    ''' Test | ProcessWorker publishes an event to unknown queue
+    '''
     settings = Settings(**{
         'name': 'TestProcessingWorker',
         'type': 'eventsflow.workers.process.ProcessingWorker',
     })
 
     worker = ProcessingWorker(settings)
-    worker.publish('event', output='target')
+    worker.publish('event', queue_name='target')
 
 
 def test_process_worker_queue_action_consume():
-    ''' worker queue's actions
+    ''' Test | ProcessWorker consumes events
 
     - consume
     '''
@@ -43,24 +43,24 @@ def test_process_worker_queue_action_consume():
 
     workers = WorkersRegistry(queues=queues)
     workers.load([
-        {   'name': 'TestWorker', 
-            'type': 'test_common.SampleProcessingWorker', 
+        {   'name': 'TestWorker',
+            'type': 'test_common.SampleProcessingWorker',
             'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue', 
-            'outputs': 'TargetQueue', 
+            'inputs': 'SourceQueue',
+            'outputs': 'TargetQueue',
         },
     ])
 
     worker = list(workers.workers())[0]
     assert worker
-    
+
     queues.get('SourceQueue').publish(test_event)
     assert worker.consume().to_dict() == test_event.to_dict()
 
     queues.get('SourceQueue').publish(test_event)
     assert worker.consume('default').to_dict() == test_event.to_dict()
 
-    assert worker.consume('unknown') == None
+    assert worker.consume('unknown') is None
 
 def test_process_worker_queue_action_publish():
     ''' worker queue's actions
@@ -79,24 +79,24 @@ def test_process_worker_queue_action_publish():
 
     workers = WorkersRegistry(queues=queues)
     workers.load([
-        {   'name': 'TestWorker', 
-            'type': 'test_common.SampleProcessingWorker', 
+        {   'name': 'TestWorker',
+            'type': 'test_common.SampleProcessingWorker',
             'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue', 
-            'outputs': 'TargetQueue', 
+            'inputs': 'SourceQueue',
+            'outputs': 'TargetQueue',
         },
     ])
 
     worker = list(workers.workers())[0]
     assert worker
-    
+
     worker.publish(test_event)
     assert queues.get('TargetQueue').consume().to_dict() == test_event.to_dict()
 
-    worker.publish(test_event, output='default')
+    worker.publish(test_event, queue_name='default')
     assert queues.get('TargetQueue').consume().to_dict() == test_event.to_dict()
 
-    worker.publish(test_event, output='unknown')
+    worker.publish(test_event, queue_name='unknown')
     with pytest.raises(LocalQueueEmpty):
         assert queues.get('TargetQueue').consume(timeout=1)
 
@@ -118,17 +118,17 @@ def test_process_worker_queue_action_commit():
 
     workers = WorkersRegistry(queues=queues)
     workers.load([
-        {   'name': 'TestWorker', 
-            'type': 'test_common.SampleProcessingWorker', 
+        {   'name': 'TestWorker',
+            'type': 'test_common.SampleProcessingWorker',
             'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue', 
-            'outputs': 'TargetQueue', 
+            'inputs': 'SourceQueue',
+            'outputs': 'TargetQueue',
         },
     ])
 
     worker = list(workers.workers())[0]
     assert worker
-    
+
     queues.get('SourceQueue').publish(test_event)
     assert worker.consume().to_dict() == test_event.to_dict()
     worker.commit()
