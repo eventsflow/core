@@ -1,9 +1,8 @@
-
-import os
+''' Eventsflow Process Flow
+'''
 import time
 import logging
-import importlib
-
+from typing import List
 
 from eventsflow.flow.parser import FlowParser
 from eventsflow.flow.settings import Settings as FlowSettings
@@ -17,7 +16,7 @@ from eventsflow.registries.workers import WorkersRegistry
 logger = logging.getLogger(__name__)
 
 
-class Flow(object):
+class Flow:
     ''' Events Processing Flow
     '''
     def __init__(self, path:str):
@@ -31,13 +30,13 @@ class Flow(object):
         self._workers.load(workers_conf)
 
     @property
-    def queues(self):
+    def queues(self) -> List:
         ''' returns the list of queues
         '''
         return self._queues.queues
 
     @property
-    def workers(self):
+    def workers(self) -> List:
         ''' returns the list of workers
         '''
         return self._workers.workers
@@ -49,17 +48,19 @@ class Flow(object):
         stopped_workers = list(self._workers.workers(status='inactive'))
 
         current_state = {
-            'activeWorkers':            active_workers,
-            'activeWorkersByName':      [p.name for p in active_workers],
-            'inactiveWorkersByName':    [p.name for p in stopped_workers],
-            'queues':                   dict([(name, queue.size()) for name, queue in self._queues.queues.items()]),
-        } 
+            'activeWorkers': active_workers,
+            'activeWorkersByName': [p.name for p in active_workers],
+            'inactiveWorkersByName': [p.name for p in stopped_workers],
+            'queues': dict([
+                (name, queue.size()) for name, queue in self._queues.queues.items()
+            ]),
+        }
         if with_logging:
-            logger.info('Queues stats: {}'.format(current_state.get('queues', [] )))
-            logger.info('Active workers: {}'.format(current_state.get('activeWorkersByName', [] )))
-            logger.info('Stopped workers: {}'.format(current_state.get('stoppedWorkersByName', [] )))
+            logger.info('Queues stats: %s', current_state.get('queues', []))
+            logger.info('Active workers: %s', current_state.get('activeWorkersByName', []))
+            logger.info('Stopped workers: %s', current_state.get('stoppedWorkersByName', []))
 
-        return current_state 
+        return current_state
 
     def run(self):
         ''' run flow
@@ -68,7 +69,6 @@ class Flow(object):
         self._workers.start()
 
         while True:
-            
             current_status = self.get_current_status(with_logging=True)
 
             if not current_status.get('activeWorkers', []):
@@ -76,22 +76,22 @@ class Flow(object):
 
             for queue_name, queue_instance in self._queues.queues.items():
                 queue_size = queue_instance.size()
-                
+
                 num_producers = 0
-                for producer in active_workers:
+                for producer in current_status.get('activeWorkers', []):
                     for output_queue_instance in getattr(producer, 'outputs', dict()).values():
                         if output_queue_instance and output_queue_instance == queue_instance:
                             num_producers += 1
-                    
+
                 num_consumers = 0
-                for consumer in active_workers:
+                for consumer in current_status.get('activeWorkers', []):
                     for input_queue_instance in getattr(consumer, 'inputs', dict()).values():
                         if input_queue_instance and input_queue_instance == queue_instance:
                             num_consumers += 1
 
                 if queue_size == 0 and num_producers == 0:
                     for _ in range(num_consumers):
-                        logger.info('Sending stop processing task to queue: {}'.format(queue_name))
+                        logger.info('Sending stop processing task to queue: %s', queue_name)
                         queue_instance.put(EventStopProcessing)
 
             time.sleep(FlowSettings.STATUS_CHECK_TIME_INTERVAL)
