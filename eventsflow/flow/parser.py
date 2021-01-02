@@ -1,7 +1,9 @@
-
+''' Flow Parser Module
+'''
 import os
-import yaml
 import logging
+
+import yaml
 
 try:
     from yaml import CLoader as Loader
@@ -13,23 +15,28 @@ from eventsflow.utils import parse_with_extra_vars
 
 
 class IncorrectFlowFormat(Exception):
-    pass
-
+    ''' The exception for an incorrect flow format
+    '''
 
 logger = logging.getLogger(__name__)
 
 
-class FlowParser(object):
-    ''' The Flow Parser
+class FlowParser:
+    ''' Flow Parser
     '''
     def __init__(self, path:str):
-
+        ''' Initialize Flow Parser
+        '''
         if not os.path.isfile(path):
-            raise IOError('The file does not exist, {}'.format(path))
+            raise IOError(f'The file does not exist, {path}')
 
         self._path = path
 
-    def parse(self, extra_vars:dict={}):
+    def parse(self, extra_vars=None):
+        ''' parse flow configuration
+        '''
+        if not extra_vars:
+            extra_vars = dict()
 
         flow_details = parse_with_extra_vars(self._path, extra_vars)
 
@@ -40,10 +47,10 @@ class FlowParser(object):
         try:
             flow = yaml.load(flow_details, Loader=Loader)
         except  yaml.YAMLError as err:
-            raise IncorrectFlowFormat('Incorrect Flow format: {}'.format(err))
+            raise IncorrectFlowFormat(f'Incorrect Flow format: {err}')
 
-        # load queues and workers 
+        # load queues and workers
         queues  = flow.get('queues', [])
         workers = flow.get('workers', [])
-        
+
         return queues, workers
