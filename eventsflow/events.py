@@ -2,7 +2,7 @@
 '''
 import json
 
-class Event(object):
+class Event:
     ''' Event
     '''
     name        = 'EventBase'
