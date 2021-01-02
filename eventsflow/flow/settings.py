@@ -1,5 +1,7 @@
+''' Flow Settings Module
+'''
 
-class Settings(object):
+class Settings:
     ''' Flow Settings
     '''
     # Time interval for checking status

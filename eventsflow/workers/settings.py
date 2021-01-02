@@ -40,31 +40,31 @@ logger = logging.getLogger(__name__)
 DEFAULT_EVENT_WAITING_TIMEOUT = 300
 
 
-class Settings(object):
+class Settings:
     ''' Worker Settings
     '''
-
     def __init__(self, **settings:dict):
-
+        ''' Initialize worker's settings
+        '''
         # worker name
-        self.name           = settings.get('name', None)
+        self.name = settings.get('name', None)
         if not self.name:
             raise TypeError('The worker name shall be specifed, %s' % self.name)
 
         # worker type
-        self.type           = settings.get('type', None)
+        self.type = settings.get('type', None)
         if not self.type:
             raise TypeError('The worker type shall be specifed, %s' % self.type)
 
         # worker parameters
-        self.parameters     = settings.get('parameters', {})
+        self.parameters = settings.get('parameters', {})
         if not isinstance(self.parameters, dict):
             raise TypeError(
                 'The parameters shall be specified as dictionary, founded {}'.format(
                     type(self.parameters)))
 
         # no of instances
-        self.instances      = settings.get('instances', 1)
+        self.instances = settings.get('instances', 1)
         if not isinstance(self.instances, int) or self.instances <= 0:
             raise TypeError('The instances parameter shall be int type and equals 1 or more')
 
@@ -72,10 +72,10 @@ class Settings(object):
         # self.events         = settings.get('events', [])
 
         # inputs
-        self.inputs     = self.parse_gueues(settings.get('inputs', None))
+        self.inputs = self.parse_gueues(settings.get('inputs', None))
 
         # outputs
-        self.outputs    = self.parse_gueues(settings.get('outputs', None))
+        self.outputs = self.parse_gueues(settings.get('outputs', None))
 
     @staticmethod
     def parse_gueues(queues):

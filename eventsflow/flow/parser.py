@@ -31,6 +31,20 @@ class FlowParser:
             raise IOError(f'The file does not exist, {path}')
 
         self._path = path
+        self._queues = list()
+        self._workers = list()
+
+    @property
+    def queues(self):
+        ''' return the list of queues
+        '''
+        return self._queues
+
+    @property
+    def workers(self):
+        ''' return the list of workers
+        '''
+        return self._workers
 
     def parse(self, extra_vars=None):
         ''' parse flow configuration
@@ -46,11 +60,11 @@ class FlowParser:
         # parse topology YAML file
         try:
             flow = yaml.load(flow_details, Loader=Loader)
-        except  yaml.YAMLError as err:
-            raise IncorrectFlowFormat(f'Incorrect Flow format: {err}')
+        except yaml.YAMLError as err:
+            raise IncorrectFlowFormat(f'Incorrect Flow format: {err}') from None
 
         # load queues and workers
-        queues  = flow.get('queues', [])
-        workers = flow.get('workers', [])
+        self._queues  = flow.get('queues', [])
+        self._workers = flow.get('workers', [])
 
-        return queues, workers
+        return self._queues, self._workers

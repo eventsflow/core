@@ -1,11 +1,12 @@
-
+''' Queues Registry Module
+'''
 import logging
 import importlib
 
 logger = logging.getLogger(__name__)
 
 
-class QueuesRegistry(object):
+class QueuesRegistry:
     ''' Queues Registries
     '''
     def __init__(self):
@@ -39,22 +40,23 @@ class QueuesRegistry(object):
         for queue in queues:
             try:
                 queue_module, queue_class = queue['type'].rsplit('.', 1)
-            except KeyError as err:
-                err_msg = 'Queue type shall be specified, {}'.format(queue)
+            except KeyError:
+                err_msg = f'Queue type shall be specified, {queue}'
                 logger.error(err_msg)
-                raise TypeError(err_msg)
+                raise TypeError(err_msg) from None
 
             queue_size = queue.get('size', 0)
             try:
-                self._registry[queue['name']] = getattr(importlib.import_module(queue_module), queue_class)(size=queue_size)
-            except KeyError as err:
-                err_msg = 'Cannot create queue, no queue name: {}'.format(queue)
+                self._registry[queue['name']] = getattr(
+                    importlib.import_module(queue_module), queue_class
+                )(size=queue_size)
+            except KeyError:
+                err_msg = f'Cannot create queue, no queue name: {queue}'
                 logger.error(err_msg)
-                raise TypeError(err_msg)
+                raise TypeError(err_msg) from None
             except AttributeError as err:
-                err_msg = 'Cannot create queue: {}, error: {}'.format(queue, err)
+                err_msg = 'Cannot create queue: {queue}, error: %s' % err
                 logger.error(err_msg)
-                raise TypeError(err_msg)
-        
-        logger.info('Queues: {}'.format(self._registry))
+                raise TypeError(err_msg) from None
 
+        logger.info('Queues: %s', self._registry)

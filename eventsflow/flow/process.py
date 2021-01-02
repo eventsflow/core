@@ -17,17 +17,26 @@ logger = logging.getLogger(__name__)
 
 
 class Flow:
-    ''' Events Processing Flow
+    ''' Processing Flow
     '''
-    def __init__(self, path:str):
+    def __init__(self, path:str, extra_vars=None):
+        ''' Initialize Processing Flow
 
-        queues_conf, workers_conf = FlowParser(path).parse()
+        ### Parameters
 
-        self._queues    = QueuesRegistry()
-        self._queues.load(queues_conf)
+        - path: the path to a flow configuration file
+        - extra_vars: extra variables, optional. From command line `--vars` argument
+        '''
+        if not extra_vars:
+            extra_vars = list()
 
-        self._workers   = WorkersRegistry(queues=self._queues)
-        self._workers.load(workers_conf)
+        queues, workers = FlowParser(path).parse(extra_vars)
+
+        self._queues = QueuesRegistry()
+        self._queues.load(queues)
+
+        self._workers = WorkersRegistry(queues=self._queues)
+        self._workers.load(workers)
 
     @property
     def queues(self) -> List:

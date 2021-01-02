@@ -11,10 +11,11 @@ class Event:
 
     def __init__(self, name:str, metadata:dict=None, payload:list=None):
         ''' initialize event
-        @param name     the event name
-        @param metadata the metadata is key/value storage
-                        with additional event information
-        @param payload  the list of payload(-s)
+
+        ### Parameters
+        - name: the event name
+        - metadata: the metadata is key/value storage with additional event information
+        - payload: the list of payload(-s)
         '''
         self.name   = name
         self.metadata   = metadata if metadata else dict()
@@ -44,7 +45,7 @@ class EventDrop(Event):
 
 
 class EventStopProcessing(Event):
-    ''' Event for Stop Processing
+    ''' Stop Processing Event
     '''
     def __init__(self):
 

@@ -25,15 +25,16 @@ class ProcessingWorker(mp.Process):
     def __init__(self, settings:Settings):
         ''' Processing worker
 
-        @param  settings
+        ### Parameters
+        - settings: worker settings
         '''
-        super(ProcessingWorker, self).__init__()
+        super().__init__()
 
-        self.name           = settings.name
-        self.inputs         = settings.inputs
-        self.outputs        = settings.outputs
-        self.parameters     = settings.parameters
-        self.timeout        = self.parameters.get('timeout', DEFAULT_EVENT_WAITING_TIMEOUT)
+        self.name = settings.name
+        self.inputs = settings.inputs
+        self.outputs = settings.outputs
+        self.parameters = settings.parameters
+        self.timeout = self.parameters.get('timeout', DEFAULT_EVENT_WAITING_TIMEOUT)
 
         self._metrics = Counter(dict())
 
@@ -48,9 +49,9 @@ class ProcessingWorker(mp.Process):
         logger.info('Worker: %s, status: completed', self.name)
 
     def run(self):
-        ''' run worker processing
+        ''' run worker processing loop
 
-        TODO
+        ### TODO
         - support multiple queues
         - add performance metrics:
             - waiting for event
@@ -79,17 +80,17 @@ class ProcessingWorker(mp.Process):
         logger.info('Worker: %s, no input queues, status: stopping ', self.name)
         self.close_worker()
 
-    def process(self, event) -> Event:
-        ''' process event
-
-        the method shall yield events or EventDrop if the events need to drop
+    def process(self, event:Event) -> Event:
+        ''' the method shall yield events or EventDrop if the events need to drop
         '''
         raise NotImplementedError('The method process does not implemented')
 
     def consume(self, queue_name:str='default') -> Event:
         ''' consume event from the queue
 
-        @param  input   the input queue
+        ### Parameters
+
+        - queue_name: the input queue
         '''
         queue = self.inputs.get(queue_name, {}).get('refs', None)
         if not queue:
