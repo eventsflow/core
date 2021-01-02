@@ -1,9 +1,11 @@
-
+''' Eventflow Utils Module
+'''
 import os
 import json
+import logging
+
 import yaml
 import jinja2
-import logging
 
 try:
     from yaml import CLoader as Loader
@@ -16,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 def load_extra_vars(extra_vars):
     ''' reused from https://github.com/ansible/ansible/blob/devel/lib/ansible/utils/vars.py
-        and modified according to eventsflow requirements 
-    ''' 
+        and modified according to eventsflow requirements
+    '''
     extra_vars_result = {}
 
     if not extra_vars:
@@ -32,15 +34,15 @@ def load_extra_vars(extra_vars):
                     try:
                         data = yaml.load(source, Loader=Loader)
                     except yaml.YAMLError as err:
-                        logger.error('{}, {}'.format(err, _vars))
+                        logger.error('%s, %s', err, _vars)
             except FileNotFoundError as err:
                 logger.error(err)
         else:
             try:
                 data = json.loads(_vars)
             except json.JSONDecodeError as err:
-                logger.error('{}, {}'.format(err, _vars))
-        
+                logger.error('%s, %s', err, _vars)
+
         if data and isinstance(data, dict):
             extra_vars_result.update(data)
 
@@ -57,12 +59,12 @@ def parse_with_extra_vars(flow_path, extra_vars):
                     loader=jinja2.FileSystemLoader(path),
                     undefined=jinja2.StrictUndefined
                 ).get_template(filename)
-        
+
     output = None
     try:
-        output = template.render(**extra_vars) 
+        output = template.render(**extra_vars)
     except jinja2.exceptions.UndefinedError as err:
-        logger.error('Topology templating, {}'.format(err))
+        logger.error('Topology templating, %s', err)
     # except jinja2.exceptions.TemplateNotFound as err:
     #     logger.error('Topology templating, {}'.format(err))
 
@@ -76,4 +78,3 @@ def split_worker_uri(uri):
     if uri:
         _module, _class = uri.rsplit('.', 1)
     return _module, _class
-
