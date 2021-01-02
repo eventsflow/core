@@ -1,5 +1,5 @@
 default:
-  image: registry.gitlab.com/eventsflow/docker/dev:0.5.4-ubuntu
+  image: registry.gitlab.com/eventsflow/docker/dev:0.6.0-ubuntu
 
 variables:
 
