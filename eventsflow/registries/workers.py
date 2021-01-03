@@ -1,9 +1,10 @@
-
-import sys
+''' Workers Registry Module
+'''
 import copy
 import logging
 
 from eventsflow.events import Event
+from eventsflow.registries.queues import QueuesRegistry
 from eventsflow.workers.settings import Settings as WorkerSettings
 
 from eventsflow.utils import split_worker_uri
@@ -12,24 +13,26 @@ from eventsflow.utils import split_worker_uri
 logger = logging.getLogger(__name__)
 
 
-class WorkersRegistry(object):
+class WorkersRegistry:
     ''' Workers Registry
     '''
-    def __init__(self, queues=None):
-
-        if not queues:
+    def __init__(self, queues:QueuesRegistry):
+        ''' Initialize Workers Registry
+        '''
+        if not isinstance(queues, QueuesRegistry):
             raise TypeError('No queues registry founded, {}'.format(queues))
 
         self._queues_registry = queues
-        self._workers_registry  = list()
+        self._workers_registry = list()
 
-    def workers(self, status='all'):
+    def workers(self, status:str='all'):
         ''' iterate by workers with their statuses
 
-        Possible statuses:
-        - all
-        - active
-        - inactive
+        ### Parameters
+        - status: possible statuses:
+            - all
+            - active
+            - inactive
         '''
         if status not in ('all', 'active', 'inactive'):
             raise TypeError('The status shall as `all`, `active` or `inactive`')
@@ -63,7 +66,6 @@ class WorkersRegistry(object):
 
         # loop by workers definitions
         for worker in workers:
-            
             # getting workers settings
             worker_settings = WorkerSettings(**worker)
 
@@ -71,7 +73,7 @@ class WorkersRegistry(object):
             for instance_id in range(worker_settings.instances):
                 _worker_settings = copy.deepcopy(worker_settings)
                 _worker_settings.name = '{name}#{process_id:0>3}'.format(
-                                        name=_worker_settings.name, 
+                                        name=_worker_settings.name,
                                         process_id=instance_id)
 
                 # update queues settings by references to queues
@@ -80,7 +82,7 @@ class WorkersRegistry(object):
                 _instance = self._create_worker_instance(_worker_settings)
                 self._workers_registry.append(_instance)
 
-        logger.info('Workers: {}'.format(self._workers_registry))
+        logger.info('Workers: %s', self._workers_registry)
 
     def _create_worker_instance(self, settings):
         ''' create worker instance
@@ -92,32 +94,32 @@ class WorkersRegistry(object):
             worker_class = getattr(worker_module, _class)
             worker_instance = worker_class(settings)
         except AttributeError as err:
-            err_msg = 'Worker module: {}, worker class: {}, error message: {}'.format(_module, _class, err)
+            err_msg = f'Worker module: {_module}, worker class: {_class}, error message: {err}'
             logger.error(err_msg)
-            raise TypeError(err_msg)
+            raise TypeError(err_msg) from None
         except ImportError as err:
-            err_msg = 'Worker module: {}, worker class: {}, error message: {}'.format(_module, _class, err)
+            err_msg = f'Worker module: {_module}, worker class: {_class}, error message: {err}'
             logger.error(err_msg)
-            raise TypeError(err_msg)
+            raise TypeError(err_msg) from None
 
         return worker_instance
 
     def _update_worker_settings_by_queue_refs(self, settings):
-        ''' assign queues to worker inputs/outputs and 
+        ''' assign queues to worker inputs/outputs and
             publish events to the queues if present
         '''
-        for name, input in settings.inputs.items():
-            queue = self._queues_registry.get(input.get('refs'))
-            if 'events' in input.keys() and queue is not None:
-                for event in input.get('events', []):
-                    queue.publish(Event(**event)) 
-            input['refs'] = queue
-    
-        for name, output in settings.outputs.items():
-            queue = self._queues_registry.get(output.get('refs'))
-            if 'events' in output.keys() and queue is not None:
-                for event in output.get('events', []):
+        for _, input_queue in settings.inputs.items():
+            queue = self._queues_registry.get(input_queue.get('refs'))
+            if 'events' in input_queue.keys() and queue is not None:
+                for event in input_queue.get('events', []):
                     queue.publish(Event(**event))
-            output['refs'] = queue
+            input_queue['refs'] = queue
+
+        for _, output_queue in settings.outputs.items():
+            queue = self._queues_registry.get(output_queue.get('refs'))
+            if 'events' in output_queue.keys() and queue is not None:
+                for event in output_queue.get('events', []):
+                    queue.publish(Event(**event))
+            output_queue['refs'] = queue
 
         return settings
