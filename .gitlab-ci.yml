@@ -2,20 +2,9 @@ default:
   image: registry.gitlab.com/eventsflow/docker/dev:0.6.0-ubuntu
 
 stages:
-- build
 - test
+- build
 - release
-
-build_eventflow:
-  stage: build
-  script:
-  - python3 setup.py sdist bdist_wheel
-  - TWINE_PASSWORD=${CI_JOB_TOKEN} \
-    TWINE_USERNAME=gitlab-ci-token \
-    python3 -m twine upload \
-      --repository-url https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi \
-      dist/*
-
 
 test_eventflow:
   stage: test
@@ -24,3 +13,14 @@ test_eventflow:
   artifacts:
     reports:
       junit: report.xml
+
+build_eventflow:
+  stage: build
+  script:
+  - python3 setup.py sdist bdist_wheel
+  - >
+    TWINE_PASSWORD=${CI_JOB_TOKEN} 
+    TWINE_USERNAME=gitlab-ci-token 
+    python3 -m twine upload 
+      --repository-url https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi 
+      dist/*
