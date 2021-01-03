@@ -10,8 +10,8 @@ from eventsflow.workers.process import ProcessingWorker
 from eventsflow.registries.queues import QueuesRegistry
 from eventsflow.registries.workers import WorkersRegistry
 
-from eventsflow.queues.local.queues import EventsQueue
-from eventsflow.queues.local.queues import LocalQueueEmpty
+from eventsflow.queues.local import EventsQueue
+from eventsflow.queues.local import QueueEmpty
 
 
 def test_process_worker_publish_event_to_unk_queue():
@@ -97,7 +97,7 @@ def test_process_worker_queue_action_publish():
     assert queues.get('TargetQueue').consume().to_dict() == test_event.to_dict()
 
     worker.publish(test_event, queue_name='unknown')
-    with pytest.raises(LocalQueueEmpty):
+    with pytest.raises(QueueEmpty):
         assert queues.get('TargetQueue').consume(timeout=1)
 
 

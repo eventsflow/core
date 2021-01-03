@@ -13,7 +13,7 @@ from eventsflow.events import EventStopProcessing
 from eventsflow.workers.settings import Settings
 from eventsflow.workers.settings import DEFAULT_EVENT_WAITING_TIMEOUT
 
-from eventsflow.queues.local.queues import LocalQueueEmpty
+from eventsflow.queues.local import QueueEmpty
 
 
 logger = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ class ProcessingWorker(mp.Process):
         try:
             # consume event from queue
             event = queue.consume(timeout=self.timeout)
-        except LocalQueueEmpty:
+        except QueueEmpty:
             logger.warning('Worker: %s, queue: %s, timeout: %s, no events',
                 self.name, queue_name, self.timeout)
             # remove queue from inputs

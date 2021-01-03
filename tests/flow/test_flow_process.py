@@ -1,5 +1,6 @@
 
-
+''' Tests for Eventsflow Flow
+'''
 import pytest
 
 from eventsflow.flow.process import Flow
@@ -34,6 +35,6 @@ def test_flow_get_current_status():
         'activeWorkers':            [],
         'activeWorkersByName':      [],
         'inactiveWorkersByName':    ['TestWorker#000',],
-        'queues':                   {'TestQueue': -2147483647}, # the queue is not initialized
+        'queues':                   {'TestQueue': 0}, # the queue is not initialized
     }
 
