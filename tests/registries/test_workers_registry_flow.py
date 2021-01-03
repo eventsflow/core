@@ -8,7 +8,7 @@ from eventsflow.registries.workers import WorkersRegistry
 
 from eventsflow.events import EventStopProcessing
 
-from tests.test_common import SampleProcessingWorker
+from tests.common_libs import SampleProcessingWorker
 
 
 def test_workers_registry_flow_worker_status():
@@ -18,7 +18,7 @@ def test_workers_registry_flow_worker_status():
     registry.load([
         {
             'name': 'TestWorker',
-            'type': 'tests.test_common.SampleProcessingWorker',
+            'type': 'tests.common_libs.SampleProcessingWorker',
         },
     ])
 
@@ -45,7 +45,7 @@ def test_workers_registry_flow_start_workers_and_check_status():
     workers_registry.load([
         {
             'name': 'TestWorker',
-            'type': 'tests.test_common.SampleProcessingWorker',
+            'type': 'tests.common_libs.SampleProcessingWorker',
             'inputs': 'records'
         },
     ])

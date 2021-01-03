@@ -4,52 +4,31 @@ import pytest
 
 from eventsflow.events import Event
 
-from eventsflow.workers.settings import Settings
-from eventsflow.workers.process import ProcessingWorker
-
-from eventsflow.registries.queues import QueuesRegistry
-from eventsflow.registries.workers import WorkersRegistry
-
 from eventsflow.queues.local import EventsQueue
 from eventsflow.queues.local import QueueEmpty
 
+from tests.common_libs import create_queues_registry
+from tests.common_libs import create_workers_registry
+from tests.common_libs import create_test_processing_worker
+
 
 def test_process_worker_publish_event_to_unk_queue():
-    ''' Test | ProcessWorker publishes an event to unknown queue
+    ''' test when processing worker publishes an event to unknown queue
     '''
-    settings = Settings(**{
-        'name': 'TestProcessingWorker',
-        'type': 'eventsflow.workers.process.ProcessingWorker',
-    })
-
-    worker = ProcessingWorker(settings)
+    worker = create_test_processing_worker()
     worker.publish('event', queue_name='target')
 
 
 def test_process_worker_queue_action_consume():
-    ''' Test | ProcessWorker consumes events
-
-    - consume
+    ''' test for processing worker consumes events
     '''
     test_event = Event(name='TestEvent#1')
 
-    queues = QueuesRegistry()
-    queues.load([
-        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-    ])
+    queues = create_queues_registry()
+    workers = create_workers_registry(queues)
+
     assert isinstance(queues.get('SourceQueue'), EventsQueue)
     assert isinstance(queues.get('TargetQueue'), EventsQueue)
-
-    workers = WorkersRegistry(queues=queues)
-    workers.load([
-        {   'name': 'TestWorker',
-            'type': 'test_common.SampleProcessingWorker',
-            'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue',
-            'outputs': 'TargetQueue',
-        },
-    ])
 
     worker = list(workers.workers())[0]
     assert worker
@@ -63,29 +42,15 @@ def test_process_worker_queue_action_consume():
     assert worker.consume('unknown') is None
 
 def test_process_worker_queue_action_publish():
-    ''' worker queue's actions
-
-    - publish
+    ''' test for processing worker publishes an event
     '''
     test_event = Event(name='TestEvent#1')
 
-    queues = QueuesRegistry()
-    queues.load([
-        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-    ])
+    queues = create_queues_registry()
+    workers = create_workers_registry(queues)
+
     assert isinstance(queues.get('SourceQueue'), EventsQueue)
     assert isinstance(queues.get('TargetQueue'), EventsQueue)
-
-    workers = WorkersRegistry(queues=queues)
-    workers.load([
-        {   'name': 'TestWorker',
-            'type': 'test_common.SampleProcessingWorker',
-            'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue',
-            'outputs': 'TargetQueue',
-        },
-    ])
 
     worker = list(workers.workers())[0]
     assert worker
@@ -100,31 +65,16 @@ def test_process_worker_queue_action_publish():
     with pytest.raises(QueueEmpty):
         assert queues.get('TargetQueue').consume(timeout=1)
 
-
 def test_process_worker_queue_action_commit():
-    ''' worker queue's actions:
-
-    - commit
+    ''' test for processing worker commits an event
     '''
     test_event = Event(name='TestEvent#1')
 
-    queues = QueuesRegistry()
-    queues.load([
-        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-    ])
+    queues = create_queues_registry()
+    workers = create_workers_registry(queues)
+
     assert isinstance(queues.get('SourceQueue'), EventsQueue)
     assert isinstance(queues.get('TargetQueue'), EventsQueue)
-
-    workers = WorkersRegistry(queues=queues)
-    workers.load([
-        {   'name': 'TestWorker',
-            'type': 'test_common.SampleProcessingWorker',
-            'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue',
-            'outputs': 'TargetQueue',
-        },
-    ])
 
     worker = list(workers.workers())[0]
     assert worker

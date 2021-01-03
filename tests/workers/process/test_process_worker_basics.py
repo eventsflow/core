@@ -8,11 +8,13 @@ from eventsflow.workers.process import ProcessingWorker
 from eventsflow.registries.queues import QueuesRegistry
 from eventsflow.registries.workers import WorkersRegistry
 
-# from eventsflow.events import Event
 from eventsflow.events import EventDrop
 from eventsflow.events import EventStopProcessing
 
-# from eventsflow.queues.local.queues import EventsQueue
+from tests.common_libs import create_queues_registry
+from tests.common_libs import create_workers_registry
+from tests.common_libs import create_test_processing_worker
+
 
 def test_process_worker_init():
     ''' test for Processing Worker Initialization
@@ -29,12 +31,7 @@ def test_process_worker_init():
 def test_process_worker_run_not_implemented():
     ''' test for Processing Worker when run() is not implemented
     '''
-    settings = Settings(**{
-        'name': 'TestProcessingWorker',
-        'type': 'eventsflow.workers.process.ProcessingWorker',
-    })
-
-    worker = ProcessingWorker(settings)
+    worker = create_test_processing_worker()
     with pytest.raises(NotImplementedError):
         worker.process('event')
 
@@ -45,16 +42,11 @@ def test_process_worker_run():
         {'name': 'EventTest#1', 'metadata': {}, 'payload': []},
     ]
 
-    queues = QueuesRegistry()
-    queues.load([
-        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-    ])
-
+    queues = create_queues_registry()
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker',
-            'type': 'test_common.SampleProcessingWorker',
+            'type': 'common_libs.SampleProcessingWorker',
             'parameters': { 'timeout': 1, },
             'inputs': [
                 {'name': 'default', 'refs': 'SourceQueue', 'events': test_events }
@@ -91,7 +83,7 @@ def test_process_worker_stop_processing_by_event():
     workers = WorkersRegistry(queues=queues)
     workers.load([
         {   'name': 'TestWorker',
-            'type': 'test_common.SampleProcessingWorker',
+            'type': 'common_libs.SampleProcessingWorker',
             'parameters': { 'timeout': 1, },
             'inputs': 'SourceQueue',
         },
@@ -105,20 +97,8 @@ def test_process_worker_stop_processing_by_event():
 def test_process_worker_drop_events():
     ''' test for Processing Worker, drop events
     '''
-    queues = QueuesRegistry()
-    queues.load([
-        {'name': 'SourceQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-        {'name': 'TargetQueue', 'type': 'eventsflow.queues.local.EventsQueue', },
-    ])
-
-    workers = WorkersRegistry(queues=queues)
-    workers.load([
-        {   'name': 'TestWorker',
-            'type': 'test_common.SampleProcessingWorker',
-            'parameters': { 'timeout': 1, },
-            'inputs': 'SourceQueue',
-        },
-    ])
+    queues = create_queues_registry()
+    workers = create_workers_registry(queues)
 
     queues.get('SourceQueue').publish(EventDrop())
     queues.get('SourceQueue').publish(EventStopProcessing())
