@@ -19,8 +19,7 @@ build_eventflow:
   script:
   - python3 setup.py sdist bdist_wheel
   - >
-    TWINE_PASSWORD=${CI_JOB_TOKEN} 
-    TWINE_USERNAME=gitlab-ci-token 
+    TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token 
     python3 -m twine upload 
-      --repository-url https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi 
-      dist/*
+    --repository-url https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi
+    dist/*
