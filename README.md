@@ -4,5 +4,5 @@ Simple library and console tool for building data processing pipelines, https://
 
 ## Development
 
-For local testing please be sure that [drone-cli](https://github.com/drone/drone-cli) is installed
+For local development and testing there is available `.devcontainer.json` configuration for VS Code 
 
