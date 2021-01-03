@@ -65,15 +65,19 @@ class EventsQueue(Queue):
         with self._cond:
             if not self._unfinished_tasks.acquire(False):
                 raise ValueError('commit() called too many times')
+            # pylint: disable=W0212
             if self._unfinished_tasks._semlock._is_zero():
                 self._cond.notify_all()
+            # pylint: enable=W0212
 
     def join(self):
         ''' join queue
         '''
         with self._cond:
+            # pylint: disable=W0212
             if not self._unfinished_tasks._semlock._is_zero():
                 self._cond.wait()
+            # pylint: enable=W0212
 
     def size(self):
         ''' Return the approximate size of the queue.
