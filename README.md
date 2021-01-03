@@ -1,7 +1,7 @@
 # eventsflow-core
 
-[![pipeline status](https://gitlab.com/eventsflow/eventsflow-core/badges/master/pipeline.svg)](https://gitlab.com/eventsflow/eventsflow-core/-/commits/master)
-[![coverage report](https://gitlab.com/eventsflow/eventsflow-core/badges/master/coverage.svg)](https://gitlab.com/eventsflow/eventsflow-core/-/commits/master)
+[![pipeline status](https://gitlab.com/eventsflow/eventsflow-core/badges/master/pipeline.svg)](https://gitlab.com/eventsflow/core/-/commits/master)
+[![coverage report](https://gitlab.com/eventsflow/eventsflow-core/badges/master/coverage.svg)](https://gitlab.com/eventsflow/core/-/commits/master)
 
 Simple library and console tool for building data processing pipelines, https://eventsflow.github.io/eventsflow/
 
