@@ -5,7 +5,7 @@ import json
 class Event:
     ''' Event
     '''
-    name        = 'EventBase'
+    name        = 'Event'
     metadata    = dict()
     payload     = list()
 
