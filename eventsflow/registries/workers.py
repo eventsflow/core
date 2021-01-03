@@ -51,18 +51,17 @@ class WorkersRegistry:
         for worker in self._workers_registry:
             worker.start()
 
-    def load(self, workers):
+    def load(self, workers:list):
         ''' load workers to registry
         '''
-        if not workers:
-            err_msg = 'No workers founded'
-            logger.error(err_msg)
-            raise TypeError(err_msg)
-
         if not isinstance(workers, (list, tuple)):
             err_msg = 'Expected workers list, {} founded'.format(type(workers))
             logger.error(err_msg)
             raise TypeError(err_msg)
+
+        if len(workers) == 0:
+            logger.warning('No workers found')
+            return
 
         # loop by workers definitions
         for worker in workers:
@@ -84,7 +83,8 @@ class WorkersRegistry:
 
         logger.info('Workers: %s', self._workers_registry)
 
-    def _create_worker_instance(self, settings):
+    @staticmethod
+    def _create_worker_instance(settings):
         ''' create worker instance
         '''
         worker_instance = None
