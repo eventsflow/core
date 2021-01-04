@@ -19,6 +19,8 @@ release_eventflow:
   stage: release
   script:
   - echo "[WARNING] Not implemented yet"
+  only:
+  - tags
 
 build_eventflow:
   stage: build
@@ -28,6 +30,9 @@ build_eventflow:
     paths:
     - dist/*.whl
     - dist/*.tar.gz
+    expire_in: 5 mins
+  only:
+  - tags
 
 deploy_eventflow:
   stage: deploy
@@ -37,3 +42,5 @@ deploy_eventflow:
     python3 -m twine upload 
     --repository-url https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/pypi
     dist/*
+  only:
+  - tags
