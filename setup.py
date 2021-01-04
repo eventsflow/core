@@ -1,14 +1,15 @@
-
+''' Eventflow Core Setup
+'''
 import os
 
-from codecs import open
+from codecs import open as openfile
 
 from setuptools import setup
 from setuptools import find_namespace_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'README.md'), 'r', 'utf-8') as handle:
+with openfile(os.path.join(here, 'README.md'), 'r', 'utf-8') as handle:
     readme = handle.read()
 
 
@@ -21,7 +22,7 @@ setup(
     author="ownport",
     author_email="ownport@gmail.com",
     packages=['eventsflow', ] + find_namespace_packages(include=["eventsflow.*", ]),
-    python_requires='>=3.5',
+    python_requires='>=3.8',
     install_requires=[
         'jinja2==2.11.2',
         'pyyaml==5.3.1',
@@ -31,7 +32,6 @@ setup(
     },
     classifiers = [
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: Implementation :: CPython',
         "License :: OSI Approved :: MIT License",
         "Operating System :: Unix",
