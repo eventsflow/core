@@ -1,6 +1,6 @@
 # eventsflow-core
 
-Simple library and console tool for building data processing pipelines, https://eventsflow.github.io/eventsflow/
+Simple library and console tool for building data processing pipelines, https://gitlab.com/eventsflow
 
 ## Development
 
