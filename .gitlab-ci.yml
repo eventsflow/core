@@ -24,6 +24,10 @@ build_eventflow:
   stage: build
   script:
   - python3 setup.py sdist bdist_wheel
+  artifacts:
+    paths:
+    - dist/*.whl
+    - dist/*.tar.gz
 
 deploy_eventflow:
   stage: deploy
