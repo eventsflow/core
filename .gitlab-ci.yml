@@ -3,8 +3,9 @@ default:
 
 stages:
 - test
-- build
 - release
+- build
+- deploy
 
 test_eventflow:
   stage: test
@@ -14,10 +15,19 @@ test_eventflow:
     reports:
       junit: report.xml
 
+release_eventflow
+  stage: release
+  script:
+  - echo "[WARNING] Not implemented yet"
+
 build_eventflow:
   stage: build
   script:
   - python3 setup.py sdist bdist_wheel
+
+deploy_eventflow:
+  stage: deploy
+  script:
   - >
     TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token 
     python3 -m twine upload 
