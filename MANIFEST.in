@@ -1,4 +1,4 @@
-include LICENSE README.md CHANGELOG.md
+include LICENSE README.md CHANGELOG.md pyproject.toml
 global-exclude *.py[co]
 graft docs
 graft examples
