@@ -1,39 +1,9 @@
-''' Eventflow Core Setup
+''' EventsFlow Core Setup
 '''
-import os
+import site
+import setuptools
 
-from codecs import open as openfile
-
-from setuptools import setup
-from setuptools import find_namespace_packages
-
-here = os.path.abspath(os.path.dirname(__file__))
-
-with openfile(os.path.join(here, 'README.md'), 'r', 'utf-8') as handle:
-    readme = handle.read()
-
-
-setup(
-    name='eventsflow-core',
-    version='0.1.24.dev0',
-    description="Events Flow Core components",
-    long_description=readme,
-    url="https://gitlab.com/eventsflow/core",
-    author="ownport",
-    author_email="ownport@gmail.com",
-    packages=['eventsflow', ] + find_namespace_packages(include=["eventsflow.*", ]),
-    python_requires='>=3.8',
-    install_requires=[
-        'jinja2==2.11.2',
-        'pyyaml==5.3.1',
-    ],
-    entry_points={
-        'console_scripts': ['eventsflow=eventsflow.cli:launch_new_instance']
-    },
-    classifiers = [
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: Implementation :: CPython',
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: Unix",
-    ]
-)
+if __name__ == "__main__":
+    # enable user site-package directory
+    site.ENABLE_USER_SITE = True
+    setuptools.setup()
