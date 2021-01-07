@@ -8,7 +8,7 @@ import argparse
 from eventsflow.flow.process import Flow
 
 from eventsflow.utils import load_extra_vars
-
+from eventsflow.version import version
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class CLI:
 
         parser.add_argument('-v', '--version',
                             action='version',
-                            version='eventsflow-v{}'.format('0.1.24.dev0'))
+                            version='eventsflow-v%s' % version)
         parser.add_argument('-l', '--log-level',
                             default='INFO',
                             help='Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL')
