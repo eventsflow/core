@@ -107,3 +107,6 @@ venv.bak/
 # IDE
 .idea/
 .vscode
+
+# EventsFlow
+eventsflow/version.py
