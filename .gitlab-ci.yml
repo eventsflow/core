@@ -15,13 +15,6 @@ test_eventflow:
     reports:
       junit: report.xml
 
-release_eventflow:
-  stage: release
-  script:
-  - echo "[WARNING] Not implemented yet"
-  only:
-  - tags
-
 build_eventflow:
   stage: build
   script:
