@@ -15,17 +15,10 @@ test_eventflow:
     reports:
       junit: report.xml
 
-release_eventflow:
-  stage: release
-  script:
-  - echo "[WARNING] Not implemented yet"
-  only:
-  - tags
-
 build_eventflow:
   stage: build
   script:
-  - python3 setup.py sdist bdist_wheel
+  - python3 -m build
   artifacts:
     paths:
     - dist/*.whl
